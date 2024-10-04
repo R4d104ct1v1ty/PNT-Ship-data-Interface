@@ -18,10 +18,9 @@ const myAngle = 79.9;
 
 
 
+
 function App() {
   const data = useData();
-  const [mapData, setMapData] = useState(null);
-  const mapUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json'
   const [sortColumn, setSortColumn] = useState("ROC");
   const [shipMmsi, setShipMmsi] = useState(0);
   const [riskiest, setRiskiest] = useState(0);
@@ -35,6 +34,7 @@ function App() {
   const [radius1, setRadius1] = useState(40);
   const [radius2, setRadius2] = useState(80);
   const [radius3, setRadius3] = useState(120);
+  const [radFactor, setRadFactor] = useState(1);
   // const [minx, setMinx] = useState(myLon-0.012);
   // const [miny, setMiny] = useState(myLat-0.014);
   // const [maxy, setMaxy] = useState(myLat+0.014);
@@ -186,19 +186,18 @@ function App() {
           <svg></svg>
           {xScale.ticks().map(tickValue => (
             <g transform={`translate(${xScale(tickValue)},0)`} style={{backgroundColor: 'green'}} className='tick'>
-              {/* <line  y2={innerHeight} /> */}
+              <line  y2={innerHeight} />
               <text y={innerHeight+5} dy=".71em" style={{textAnchor: 'middle', fontSize: "12px"}}>{tickValue}</text>
             </g>
           ))}
           {yScale.ticks().map(tickValue => (
             <g transform={`translate(0,${yScale(tickValue)})`} className='tick'> 
-              {/* <line x2={innerWidth} /> */}
+              <line x2={innerWidth} />
               <text style={{textAnchor: 'end', fontSize: '12px'}} dy="0.1em" x={-5}>{tickValue}</text>
             </g>
           ))}
           {data.map(d => (
             <g>
-              
               <text className='grptext' x={pointRadial(Math.PI/6, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)} y={pointRadial(Math.PI/6, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)+3}>{d.mmsi==28?30:''}</text>
               <text className='grptext' x={pointRadial(Math.PI/3, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)} y={pointRadial(Math.PI/3, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)+3}>{d.mmsi==28?60:''}</text>
               <text className='grptext' x={pointRadial(Math.PI/2, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)} y={pointRadial(Math.PI/2, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)+3}>{d.mmsi==28?90:''}</text>
@@ -211,10 +210,10 @@ function App() {
               <text className='grptext' x={pointRadial(10*Math.PI/6, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)-16} y={pointRadial(10*Math.PI/6, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)+3}>{d.mmsi==28?300:''}</text>
               <text className='grptext' x={pointRadial(11*Math.PI/6, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)-14} y={pointRadial(11*Math.PI/6, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)+3}>{d.mmsi==28?330:''}</text>
               <text className='grptext' x={pointRadial(12*Math.PI/6, radius3)[0]+(d.mmsi==28?xScale(xValue(d)):0)-4} y={pointRadial(12*Math.PI/6, radius3)[1]+(d.mmsi==28?yScale(yValue(d)):0)}>{d.mmsi==28?0:''}</text>
-              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius3:0} style={{fill: "red", opacity: 0.25}}></circle>
-              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius2:0} style={{fill: "blue", opacity: 0.25}}></circle>
-              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius1:0} style={{fill: "green", opacity: 0.25}}></circle>
-              <polygon points={`${xScale(xValue(d))},${yScale(yValue(d))-15} ${xScale(xValue(d))+8},${yScale(yValue(d))+10} ${xScale(xValue(d))-8},${yScale(yValue(d))+10}`} style={{fill: `${riskiest==d.mmsi? "red" :data[1].mmsi==d.mmsi?"orange":data[2].mmsi==d.mmsi?"yellow": "black"}`, stroke: `${riskiest==d.mmsi? "red" :data[1].mmsi==d.mmsi?"orange": "black"}`}} onMouseOver={(e) => mouseover(e, d.mmsi)} onMouseOut={mouseout} transform={`rotate(${d.mmsi == 28? rotateAngle :d.course}, ${xScale(xValue(d))},${yScale(yValue(d))})`}>{data[0].mmsi==d.mmsi || data[1].mmsi== d.mmsi || data[2].mmsi == d.mmsi ? <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.1" />:<></>}<title>{`(${d.lat}, ${d.lon})\n mmsi: ${d.mmsi}  roc: ${d.roc}  cpa:${d.cpa}  tcpa: ${d.tcpa}  course: ${d.course}  heading: ${d.heading}`}</title></polygon>
+              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius3:0} style={{fill: "red", opacity: 0.25, zIndex: -3}}></circle>
+              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius2:0} style={{fill: "blue", opacity: 0.25, zIndex: -2}}></circle>
+              <circle cx={d.mmsi==28?xScale(xValue(d)):0} cy={d.mmsi==28?yScale(yValue(d)):0} r={d.mmsi==28?radius1:0} style={{fill: "green", opacity: 0.25, zIndex: -1}}></circle>
+              <polygon points={`${xScale(xValue(d))},${yScale(yValue(d))-15} ${xScale(xValue(d))+8},${yScale(yValue(d))+10} ${xScale(xValue(d))-8},${yScale(yValue(d))+10}`} style={{fill: `${riskiest==d.mmsi? "red" :data[1].mmsi==d.mmsi?"orange":data[2].mmsi==d.mmsi?"yellow": "black"}`, stroke: `${riskiest==d.mmsi? "red" :data[1].mmsi==d.mmsi?"orange": "black"}`, zIndex: 1}} onMouseOver={(e) => mouseover(e, d.mmsi)} onMouseOut={mouseout} transform={`rotate(${d.mmsi == 28? rotateAngle :d.course}, ${xScale(xValue(d))},${yScale(yValue(d))})`}>{data[0].mmsi==d.mmsi || data[1].mmsi== d.mmsi || data[2].mmsi == d.mmsi ? <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.1" />:<></>}<title>{`(${d.lat}, ${d.lon})\n mmsi: ${d.mmsi}  roc: ${d.roc}  cpa:${d.cpa}  tcpa: ${d.tcpa}  course: ${d.course}  heading: ${d.heading}`}</title></polygon>
             
             </g>
             
